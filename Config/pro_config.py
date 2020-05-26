@@ -44,17 +44,16 @@ def get_login_accout(current_thread_name_index):
 
 def get_app_info(pro_name):
     """
-    通过项目名称 获取APP信息 （ appPackage、 appActivity ）
+    通过项目名称 获取APP信息 （ appPackage ）
     :param pro_name:
     :return:
+
     """
     app_info = {}
     if pro_name == "pro_demo_1":  # 应用宝
         app_info["appPackage"] = 'com.tencent.android.qqdownloader'
-        app_info["appActivity"] = 'com.tencent.pangu.link.SplashActivity'
     else:
         app_info["appPackage"] = None
-        app_info["appActivity"] = None
     return app_info
 
 

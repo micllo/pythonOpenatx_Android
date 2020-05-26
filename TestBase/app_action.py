@@ -4,8 +4,8 @@ from Env import env_config as cfg
 from Config import global_var as gv
 import time
 from Tools.mongodb import MongoGridFS
-from appium import webdriver
 from Common.test_func import send_DD_for_FXC
+import uiautomator2
 
 
 def get_android_driver(pro_name, current_thread_name_index, connected_android_device_list):
@@ -24,33 +24,8 @@ def get_android_driver(pro_name, current_thread_name_index, connected_android_de
     3.获取设备驱动
     """
 
-    # 获取 Appium 服务启动应用所需的能力参数 (指定设备，指定应用)
-    from Config.pro_config import get_app_info
-    app_info = get_app_info(pro_name)
-    desired_caps = dict()
-    desired_caps["platformName"] = "Android"
-    desired_caps["appPackage"] = app_info["appPackage"]
-    desired_caps["appActivity"] = app_info["appActivity"]
-    # 使用哪个自动化引擎
-    desired_caps["automationName"] = "UiAutomator2"
-    # Appium 等待接收从客户端发送的新命令的超时时长，超时后Appium会终止会话
-    desired_caps["newCommandTimeout"] = 30
-    # Android 等待设备就绪的超时时长，以秒为单位
-    desired_caps["deviceReadyTimeout"] = 30
-    # Android 在启动后等待设备就绪的超时时长，以秒为单位
-    desired_caps["androidDeviceReadyTimeout"] = 30
-
-    # appium 启动时进程保存的原因（有待验证）
-    # desired_caps["adbExecTimeout"] = 20000
-    # desired_caps["uiautomator2ServerLaunchTimeout"] = 30000
-
-    # 唤醒屏幕（效果不理想）
-    desired_caps["unlockType"] = "pattern"
-    desired_caps["unlockKey"] = "12589"
-
     # 通过'当前线程名索引' 获取已连接设备列表中对应的'Android'设备信息和'Appium'服务
     device_name = None
-    appium_server = None
     for connected_android_devices_dict in connected_android_device_list:
         if current_thread_name_index == connected_android_devices_dict["thread_index"]:
             desired_caps["platformVersion"] = connected_android_devices_dict["platform_version"]
@@ -60,23 +35,34 @@ def get_android_driver(pro_name, current_thread_name_index, connected_android_de
             break
     log.info("\n\n")
     log.info("device_name -> " + device_name)
-    log.info("appium_server -> " + appium_server)
     log.info("\n\n")
-    # 获取设备驱动
+
     try:
-        driver = webdriver.Remote(appium_server, desired_caps)
+        # 连接设备 ADB_WIFI
+        driver = uiautomator2.connect_adb_wifi('192.168.31.136:5555')
+
+        # 连接设备 WIFI
+        # driver = uiautomator2.connect('192.168.31.136')
+        # driver = uiautomator2.connect_wifi('192.168.31.136')
+
+        # 连接设备 USB
+        # driver = uiautomator2.connect('15a6c95a')
+        # driver = uiautomator2.connect_usb('15a6c95a')
+
+        # 配置accessibility服务的最大空闲时间，超时将自动释放
+        driver.set_new_command_timeout(gv.NEW_COMMAND_TIMEOUT)
+
+        # 全局默认的元素定位超时时间
+        driver.implicitly_wait(gv.IMPLICITY_WAIT)
+
+        # 解锁（点亮屏幕）相当于点击了home健
+        driver.unlock()
     except Exception as e:
         log.error(("显示异常：" + str(e)))
-        if "Failed to establish a new connection" in str(e):
-            error_msg = "Appium 服务(" + appium_server + ")未启动"
-        elif "Could not find a connected Android device" in str(e):
-            error_msg = "Android 设备(" + device_name + ")未连接"
-        elif "Failed to launch Appium Settings app" in str(e):
-            error_msg = "Appium Setting 应用启动超时"
-        else:
-            error_msg = "启动 Appium 服务的其他异常情况"
+        error_msg = "启动 ATX 服务的其他异常情况"
         send_DD_for_FXC(title=pro_name, text="#### " + error_msg + "")
         raise Exception(error_msg)
+
     return driver, device_name
 
 

@@ -171,16 +171,18 @@ def suite_sync_run_case(pro_name):
         send_DD_for_FXC(title=pro_name, text="#### '" + pro_name + "' 项目存在<运行中>的用例而未执行测试（定时任务）")
         return "Done"
 
-    # 获取 已连接的 Android 设备信息列表
-    connected_android_device_list = config_android_device_with_appium_server_list()
-    # 列表数量 作为 线程数量
-    thread_num = len(connected_android_device_list)
-    log.info("\n线程数量 ： " + str(thread_num))
-    log.info("已连接的Android设备信息列表：" + str(connected_android_device_list) + "\n")
+    # # 获取 已连接的 Android 设备信息列表
+    # connected_android_device_list = config_android_device_with_appium_server_list()
+    # # 列表数量 作为 线程数量
+    # thread_num = len(connected_android_device_list)
+    # log.info("\n线程数量 ： " + str(thread_num))
+    # log.info("已连接的Android设备信息列表：" + str(connected_android_device_list) + "\n")
+    #
+    # if thread_num == 0:
+    #     send_DD_for_FXC(title=pro_name, text="#### '" + pro_name + "' 项目 未连接任何 Android 设备")
+    #     return "Done"
 
-    if thread_num == 0:
-        send_DD_for_FXC(title=pro_name, text="#### '" + pro_name + "' 项目 未连接任何 Android 设备")
-        return "Done"
+    thread_num = 1
 
     # 将'测试类'中的所有'测试方法'添加到 suite 对象中（每个'测试类'实例对象包含一个'测试方法'）
     from TestBase.test_case_unit import ParaCase

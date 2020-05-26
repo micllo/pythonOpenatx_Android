@@ -43,8 +43,6 @@ class ParaCase(unittest.TestCase):
         # 获取'Android'驱动 和 设备名称
         self.driver, self.device_name = get_android_driver(self.pro_name, self.current_thread_name_index,
                                                            self.connected_android_device_list)
-        # 隐式等待时间
-        self.driver.implicitly_wait(gv.IMPLICITY_WAIT)
 
     def tearDown(self):
         """

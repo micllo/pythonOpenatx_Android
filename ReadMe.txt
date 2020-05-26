@@ -12,25 +12,17 @@
 （4）get_app_info：        通过'项目名称'，获取APP信息（ appPackage、 appActivity ）
 （5）config_android_device_with_appium_server_list：    配置 Android 设备信息 以及 对应的 Appium 服务
 
-    < 备 注 >
-      1.一个Appium服务只能启动一个Android设备，若要使用多线程，则必须要将Android设备与Appium服务绑定起来
-      2.<小米5S>已刷机，可以通过无线连接设备，所以使用docker中的appium服务
-      3.<坚果Pro>未刷机，需要连接一次USB，所以使用mac中的appium服务
 
 
 【 未 解 决 的 问 题 】
-1.真机在灭屏后长时间不运行的情况下，执行测试会因为无法点亮屏幕而导致报错："启动Appium服务的其他异常情况"
-  可能的解决方案：（1）在'desired_caps'中找到启动设备时点亮屏幕的方法、（2）将真机设置保持常亮
 
 
-【 关于 本地 gulp 部 署 前 后 的 注 意 事 项 】
-1.部署前：
-（1）启动 Docker 的 appium_server 服务
-（2）连接 Docker 中的设备 < 注意：第一次连接时，需要在手机上进行确认授权 >
-2.部署后：
-（1）手动连接 Docker 中的设备 < 该命令无法使用gulp 必须手动执行 >
-（2）手动确认：Appium服务是否正常启动、Android设备是否正确连接
-    （ 相关命令在 gulpfile.js 文件最后 ）
+
+【 关于 本地 gulp 部 署 后 的 注 意 事 项 】
+
+1.检查：Android设备是否正确连接 adb devices
+
+2.若 第一次 安装 ATXserver 服务到设备，则需要在设备上进行授权操作
 
 
 ########################################################################################################################
@@ -100,19 +92,19 @@ sudo nginx -s reload
 ########################################################################################################################
 
 
-【 配 置 Appium Android 环 境 】（ Mac 和 Docker 一样 ）
+【 配 置 Openatx uiautomator2 Android 环 境 】
 
-由于：多线程并发启动不同设备进行测试时，每个用例中使用的appium服务和androidSDK服务都必须要是独立的
-所以：启动两个 Appium 服务
+1.安装工具
+（1）安装 android-sdk 工具（提供adb命令连接真机或模拟器、提供uiautomatorviewer 定位元素）
+（2）安装 uiautomator2 服务：pip3 install -U uiautomator2（提供openatx服务）
 
-【 Mac Appium Server 】
-1.adb连真机命令：adb connect 192.168.31.253:4444 < 坚果Pro >
-2.启动appium服务命令：nohup node /Applications/Appium.app/Contents/Resources/app/node_modules/appium/build/lib/main.js --port 4723 --bootstrap-port 4713 > /dev/null 2>&1 &
- （ 注：第一次需要在真机上进行授权、可能需要删除 ATX.apk 应用 ）
+2.连接设备
+（1）adb连真机：adb connect 192.168.31.136:5555 < 小米5S >
+              adb connect 192.168.31.253:4444 < 坚果Pro >
 
-【 Docker Appium Server 】
-1.adb连真机命令：docker exec -it appium_andriod adb connect 192.168.31.136:5555 < 小米5S >
-2.启动appium容器：docker-compose -f appium_android_compose.yml --compatibility up -d
+（2）安装ATXserver服务到设备：python3 -m uiautomator2 init
+    （ 在设备上安装的用于保持设备与电脑通信的服务 ）
+    （ 注：第一次需要在真机上进行授权，可同时安装多个已连接的设备 ）
 
 
 ########################################################################################################################
@@ -155,19 +147,6 @@ sudo nginx -s reload
 3.退出虚拟环境：deactivate
 4.添加依赖：
 pip3 install -v flask==0.12 -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com
-
-
-【 终端启动 appium desktop 服务命令 】
-1.使用 appium server 时
-    appium appium -a 127.0.0.1 -p 4723 --session-override &
-
-2.使用 appium desktop 时
-    nohup node /Applications/Appium.app/Contents/Resources/app/node_modules/appium/build/lib/main.js --port 4723 --bootstrap-port 4713 > /dev/null 2>&1 &
-    --port ：appium监听端口
-    --bootstrap-port ：连接Android设备的端口
-
-3.查看 appium server 进程 PID
-    ps -ef | grep -v "grep" | grep appium
 
 
 ------------------------------------------
@@ -231,10 +210,8 @@ adb -s 15a6c95a shell input keyevent 26
 ########################################################################################################################
 
 
-【 Docker Centos7 相关 】
 
-
-【 服 务 端 配 置 Appium Android 环 境 】
+【 服 务 端 配 置 Openatx uiautomator2 Android 环 境 】
 
 备注：
     生产环境为了减少意外情况，尽量使用无线连接真机
@@ -245,26 +222,14 @@ adb -s 15a6c95a shell input keyevent 26
 
 环境配置 方案一：
     若 有些监控的真机无法获取root权限(刷机失败)
-    则 在 linux 上启动一个容器：监控服务(Docker)
-       在 win10 | mac_mini 上安装两个服务：Android-SDK、appium服务
+    则 在 win10 | mac_mini 上 安装：Android-SDK、uiautomator2服务、监控服务
 
-    无线连接设备（需使用一次USB）
-    （1）绑定真机 ：adb connect 192.168.31.136:5555
-    （2）查看设备 ：adb devices
-    （3）安装待测试apk ：adb -s 192.168.31.136:5555 install yyb.apk
 
 环境配置 方案二：
     若 待监控的真机全部都可以获取root权限(刷机成功)
-    则 在 linux | win10 | mac_mini 上启用两个容器：监控服务(Docker)、Appium服务(Docker) - budtmo/docker-android-real-device
+    则 在 linux | win10 | mac_mini 上启用一个Docker容器：Android-SDK、uiautomator2服务、监控服务
       ( 备注：若 使用 linux 则要确保 linux 与 手机 处于同一网络 )
 
-    无线连接设备(Docker）
-    （1）绑定真机（不进入容器）：docker exec -it appium_andriod adb connect 192.168.31.136:5555
-    （2）查看设备（不进入容器）：docker exec -it appium_andriod adb devices
-    （3）安装待测试apk（不进入容器）：docker exec -it appium_andriod adb -s 192.168.31.136:5555 install yyb.apk
-
-    Appium服务(Docker)中提供的'noVNC'界面地址来查看'appium log'
-    http://docker_ip:6080
 
 ------------------------------------------
 

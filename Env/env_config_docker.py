@@ -31,10 +31,6 @@ API_ADDR = SERVER_IP + ":" + NGINX_PORT + "/" + NGINX_API_PROXY
 # 测试报告地址
 BASE_REPORT_PATH = "http://" + SERVER_IP + ":" + NGINX_PORT + REPORT_PATH
 
-# Appium 服务
-APPIUM_SERVER_MAC_4723 = SERVER_IP + ":4723/wd/hub"
-APPIUM_SERVER_DOCKER_4724 = SERVER_IP + ":4724/wd/hub"
-
 # mongo 数据库
 MONGODB_ADDR = SERVER_IP + ":" + MONGO_PORT
 MONGODB_DATABASE = "app_auto_test_openatx_android"

@@ -1,8 +1,9 @@
 # -*- coding:utf-8 -*-
 # 全局变量
-# PAGE_LOAD_TIME = 30  # 页面加载超时
 
-IMPLICITY_WAIT = 10  # 隐式等待时间
+NEW_COMMAND_TIMEOUT = 300  # 配置accessibility服务的最大空闲时间，超时将自动释放。默认3分钟(180)
+
+IMPLICITY_WAIT = 10.0  # 全局默认的元素定位超时时间
 
 POLLING_CONTENT_TIME_OUT = 10  # 轮询内容的超时时间
 

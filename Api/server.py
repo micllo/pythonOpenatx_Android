@@ -6,7 +6,7 @@ from Api.api_services.api_interface import *
 
 @flask_app.route("/")
 def server_index():
-    server_info = "pythonAppium_Android：V1.0.00R20200512"
+    server_info = "pythonOpenatx_Android：V1.0.00R20200526"
     return server_info
 
 
