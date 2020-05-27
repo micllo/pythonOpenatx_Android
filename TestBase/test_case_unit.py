@@ -1,11 +1,11 @@
 # -*- coding:utf-8 -*-
 import unittest
 from Common.com_func import log
-from Config import global_var as gv
 from Tools.mongodb import MongodbUtils
 from Env import env_config as cfg
 from Common.test_func import mongo_exception_send_DD
 from TestBase.app_action import get_android_driver
+from Common.test_func import send_DD_for_FXC
 
 
 class ParaCase(unittest.TestCase):
@@ -34,23 +34,51 @@ class ParaCase(unittest.TestCase):
     def setUp(self):
         """
         【 每个用例对象执行前，需要进行如下配置 】
+
+        【 备 注 】
+            self.driver  : 操作 Android 设备
+            self.session : 操作 APP 应用
         :return:
         """
         from Config.pro_config import get_login_accout
         # 通过线程名的索引 获取登录账号
         self.user, self.passwd = get_login_accout(self.current_thread_name_index)
 
-        # 获取'Android'驱动 和 设备名称
+        # 获取'Android'驱动、设备名称
         self.driver, self.device_name = get_android_driver(self.pro_name, self.current_thread_name_index,
                                                            self.connected_android_device_list)
+        # 获取APP应用信息
+        from Config.pro_config import get_app_package
+        self.app_package = get_app_package(self.pro_name)
+
+        # 通过'Android'驱动 启动APP应用
+        try:
+            self.session = self.driver.session(self.app_package)
+        except Exception as e:
+            log.error(("显示异常：" + str(e)))
+            if "SessionBrokenError" in str(e):
+                error_msg = self.pro_name + " 项目的APP应用没有启动"
+            elif "package not found" in str(e):
+                error_msg = self.pro_name + " 项目的APP应用package名称有误"
+            else:
+                error_msg = self.pro_name + " 项目启动APP时 出现异常情况"
+            send_DD_for_FXC(title=self.pro_name, text="#### " + error_msg + "")
+            raise Exception(error_msg)
+
+        # 获取当前APP的信息 {'package': '', 'activity': ''}
+        # self.log.info(self.driver.app_current())
+        # self.log.info(self.session.app_current())
 
     def tearDown(self):
         """
         【 每个用例对象执行后，需要进行如下配置 】
         :return:
         """
-        # 关闭应用
-        self.driver.quit()
+        # 停止APP应用
+        self.session.close()
+
+        # 通过'Android'驱动 关闭APP应用
+        # self.driver.app_stop(self.app_package)
 
     @staticmethod
     def get_online_case_to_suite(pro_name, connected_android_device_list=[]):

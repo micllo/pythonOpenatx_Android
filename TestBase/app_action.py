@@ -10,12 +10,12 @@ import uiautomator2
 
 def get_android_driver(pro_name, current_thread_name_index, connected_android_device_list):
     """
-    【 获取 Android 设备驱动 】
+    【 获取'Android'驱动、设备名称 】
     :param pro_name
     :param current_thread_name_index: 当前线程名字的索引
     :param connected_android_device_list: 已连接设备信息列表
-    [ { "thread_index": 1, "device_name": "小米5S", "platform_version": "7.0", "device_udid": "192.168.31.136:5555", "appium_server": "http://127.0.0.1:4724/wd/hub" } } ,
-      { "thread_index": 2, "device_name": "坚果Pro", "platform_version": "7.1.1", "device_udid": "192.168.31.253:4444", "appium_server": "http://127.0.0.1:4723/wd/hub" } } ]
+    [ { "thread_index": 1, "device_name": "小米5S",  "device_udid": "192.168.31.136:5555"} } ,
+      { "thread_index": 2, "device_name": "坚果Pro", "device_udid": "192.168.31.253:4444" } } ]
     :return:
 
     【 步 骤 】
@@ -26,20 +26,21 @@ def get_android_driver(pro_name, current_thread_name_index, connected_android_de
 
     # 通过'当前线程名索引' 获取已连接设备列表中对应的'Android'设备信息和'Appium'服务
     device_name = None
+    device_udid = None
     for connected_android_devices_dict in connected_android_device_list:
         if current_thread_name_index == connected_android_devices_dict["thread_index"]:
-            desired_caps["platformVersion"] = connected_android_devices_dict["platform_version"]
-            desired_caps["deviceName"] = connected_android_devices_dict["device_udid"]
+            device_udid = connected_android_devices_dict["device_udid"]
             device_name = connected_android_devices_dict["device_name"]
-            appium_server = connected_android_devices_dict["appium_server"]
             break
     log.info("\n\n")
     log.info("device_name -> " + device_name)
+    log.info("device_udid -> " + device_udid)
     log.info("\n\n")
 
+    driver = None
     try:
         # 连接设备 ADB_WIFI
-        driver = uiautomator2.connect_adb_wifi('192.168.31.136:5555')
+        driver = uiautomator2.connect_adb_wifi(device_udid)
 
         # 连接设备 WIFI
         # driver = uiautomator2.connect('192.168.31.136')
@@ -57,78 +58,83 @@ def get_android_driver(pro_name, current_thread_name_index, connected_android_de
 
         # 解锁（点亮屏幕）相当于点击了home健
         driver.unlock()
+
     except Exception as e:
         log.error(("显示异常：" + str(e)))
-        error_msg = "启动 ATX 服务的其他异常情况"
+        if "Uiautomator started failed" in str(e):
+            error_msg = pro_name + " 项目启动 ATX 服务时 未授权"
+        else:
+            error_msg = pro_name + "项目 Uiautomator 启动 ATX 服务的其他异常情况"
         send_DD_for_FXC(title=pro_name, text="#### " + error_msg + "")
         raise Exception(error_msg)
-
-    return driver, device_name
+    finally:
+        return driver, device_name
 
 
 class Base(object):
 
     def __init__(self, case_instance):
-        self.case_instance = case_instance  # 测试用例的实例对象
-        self.driver = case_instance.driver
+        self.case_instance = case_instance    # 测试用例的实例对象
+        self.driver = case_instance.driver    # 操作 Android 设备
+        self.session = case_instance.session  # 操作 APP 应用
         self.device_name = case_instance.device_name
         self.log = log
 
-    def find_ele(self, *args):
+    def find_ele(self, **kwargs):
         try:
-            self.log.info("通过" + args[0] + "定位，元素是 " + args[1])
-            return self.driver.find_element(*args)
-        except Exception:
-            raise Exception(args[1] + " 元素定位失败！")
+            ele = self.session(**kwargs)
+            self.log.info(ele.info)  # 作用：为了捕获异常
+            return ele
+        except Exception as e:
+            self.log.error("异常信息： " + str(e))
+            if "Uiautomator started failed" in str(e):
+                error_msg = "启动 ATX 服务时 未授权"
+            elif "UiObjectNotFoundException" in str(e):
+                error_msg = "元素定位失败！"
+            elif "SessionBrokenError" in str(e):
+                error_msg = "APP没有运行"
+            else:
+                error_msg = "元素定位的其他异常"
+            raise Exception(error_msg)
 
-    def find_ele_by_text(self, content):
+    def find_ele_by_child_text(self, text, class_name, **kwargs):
         """
-        通过text找到元素（唯一）
-        :param content:
+        通过子元素的text查找
+        :param text:
+        :param class_name:
         :return:
         """
         try:
-            return self.driver.find_element_by_android_uiautomator('new UiSelector().text("' + content + '")')
-        except Exception:
-            raise Exception("text = \"" + content + "\" 的元素未找到")
-
-    def find_eles_by_text(self, content):
-        """
-        通过text找到元素（多个）
-        :param content:
-        :return:
-        """
-        try:
-            return self.driver.find_elements_by_android_uiautomator('new UiSelector().text("' + content + '")')
-        except Exception:
-            raise Exception("text = \"" + content + "\" 的元素未找到")
+            ele = self.find_ele(**kwargs).child_by_text(text, className=class_name)
+            self.log.info(ele.info)  # 作用：为了捕获异常
+            return ele
+        except Exception as e:
+            self.log.error("异常信息： " + str(e))
+            if "UiObjectNotFoundException" in str(e):
+                error_msg = "text = \"" + text + "\" 的元素未找到"
+            elif "SessionBrokenError" in str(e):
+                error_msg = "APP没有运行"
+            else:
+                error_msg = "text元素定位异常"
+            raise Exception(error_msg)
 
     def click(self, *args):
         self.find_ele(*args).click()
 
-    def send_key(self, *args, value):
-        self.find_ele(*args).send_keys(value)
-
-    def js(self, str):
-        self.driver.execute_script(str)
-
-    def url(self):
-        return self.driver.current_url
-
-    def back(self):
-        self.driver.back()
-
-    def forward(self):
-        self.driver.forward()
-
-    def quit(self):
-        self.driver.quit()
+    def click_exists(self, timeout, *args):
+        """
+        定位的元素若存在，则进行点击操作（设置等待时间）
+        :param timeout: 等待元素超时时间
+        :param args:
+        :return:
+        """
+        self.find_ele(*args).click_exists(timeout)
 
     # 判断页面内容是否存在
     def content_is_exist(self, content, time_out):
         time_init = 1   # 初始化时间
         polling_interval = 1  # 轮询间隔时间
-        while content not in self.driver.page_source:
+        while content not in self.session.dump_hierarchy():
             time.sleep(polling_interval)
             time_init = time_init + 1
             if time_init >= time_out:
@@ -151,7 +157,7 @@ class Base(object):
         # 获取当前测试用例的路径 -> ../类名/方法名/
         current_test_path = cfg.SCREENSHOTS_DIR + case_instance.pro_name + "/" + case_instance.class_method_path
         mkdir(current_test_path)
-        self.driver.get_screenshot_as_file(current_test_path + image_name)
+        self.session.screenshot(current_test_path + image_name)
         mgf = MongoGridFS()
         files_id = mgf.upload_file(img_file_full=current_test_path + image_name)
         case_instance.screen_shot_id_list.append(files_id)
@@ -167,7 +173,7 @@ class Base(object):
         is_exist = True
         time_init = 1   # 初始化时间
         polling_interval = 1  # 轮询间隔时间
-        while content not in self.driver.page_source:
+        while content not in self.session.dump_hierarchy():
             time.sleep(polling_interval)
             time_init = time_init + 1
             if time_init >= gv.POLLING_CONTENT_TIME_OUT:
@@ -183,46 +189,46 @@ class Base(object):
         :param y: 从坐标（从左上角开始）
         :return:
         """
-        self.driver.tap([(x, y)])
+        self.session.tap(x, y)
 
     # 获得机器屏幕大小x,y
     def get_size(self):
-        x = self.driver.get_window_size()['width']
-        y = self.driver.get_window_size()['height']
+        x = self.session.window_size()[0]
+        y = self.session.window_size()[1]
         # log.info(x, y)
         return x, y
 
     # 屏幕向上滑动（效果：屏幕往'下'翻动）
-    def swipe_up(self, t=1000):
+    def swipe_up(self):
         l = self.get_size()
         x = int(l[0] * 0.5)  # 固定 x 坐标
         y1 = int(l[1] * 0.75)  # 起始 y 坐标
         y2 = int(l[1] * 0.25)  # 终点 y 坐标
-        self.driver.swipe(x, y1, x, y2, t)
+        self.session.swipe(x, y1, x, y2)
 
     # 屏幕向下滑动（效果：屏幕往'上'翻动）
-    def swipe_down(self, t=1000):
+    def swipe_down(self):
         l = self.get_size()
         x = int(l[0] * 0.5)  # 固定 x 坐标
         y1 = int(l[1] * 0.25)  # 起始 y 坐标
         y2 = int(l[1] * 0.75)  # 终点 y 坐标
-        self.driver.swipe(x, y1, x, y2, t)
+        self.session.swipe(x, y1, x, y2)
 
     # 屏幕向左滑动（效果：屏幕往'右'翻动）
-    def swip_left(self, t=1000):
+    def swip_left(self):
         l = self.get_size()
         y = int(l[1] * 0.5)  # 固定 y 坐标
         x1 = int(l[0] * 0.75)  # 起始 x 坐标
         x2 = int(l[0] * 0.05)  # 终点 x 坐标
-        self.driver.swipe(x1, y, x2, y, t)
+        self.session.swipe(x1, y, x2, y)
 
     # 屏幕向右滑动（效果：屏幕往'左'翻动）
-    def swip_right(self, t=1000):
+    def swip_right(self):
         l = self.get_size()
         y = int(l[1] * 0.5)  # 固定 y 坐标
         x1 = int(l[0] * 0.05)  # 起始 x 坐标
         x2 = int(l[0] * 0.75)  # 终点 x 坐标
-        self.driver.swipe(x1, y, x2, y, t)
+        self.session.swipe(x1, y, x2, y)
 
 
 if __name__ == "__main__":
