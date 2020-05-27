@@ -9,6 +9,18 @@ class SearchPage(Base):
         【 元 素 定 位 】
     """
 
+    # 触摸点击'我知道了'按钮
+    def touch_iknow_btn(self):
+        self.touch_click(250, 1300)
+
+    # 相关'允许'按钮
+    def allowed_btn(self):
+        return self.find_ele(resourceId="android:id/button1")
+
+    # 相关'X'按钮
+    def close_btn(self):
+        return self.find_ele(resourceId="com.tencent.android.qqdownloader:id/b3f")
+
     # 搜索文本框1
     def search_field_1(self):
         return self.find_ele(resourceId="com.tencent.android.qqdownloader:id/awt")
@@ -16,7 +28,6 @@ class SearchPage(Base):
     # 搜索文本框2
     def search_field_2(self):
         return self.find_ele(resourceId="com.tencent.android.qqdownloader:id/yv")
-        # return self.find_ele(text="58同城", className="android.widget.EditText")
 
     # 搜索按钮
     def search_btn(self):
@@ -35,6 +46,31 @@ class SearchPage(Base):
     """
         【 页 面 功 能 】
     """
+
+    def xiao_mi_5s_step(self):
+        """
+        小米5S 需要执行的步骤
+        :return:
+        """
+
+        # 触摸点击'我知道了'按钮
+        self.screenshot(image_name="iknow_btn.png")
+        self.touch_iknow_btn()
+        time.sleep(2)
+
+        # # 点击相关'允许'按钮
+        # self.screenshot(image_name="allowed_btn1.png")
+        # self.allowed_btn().click()
+        # time.sleep(2)
+        # self.screenshot(image_name="allowed_btn2.png")
+        # self.allowed_btn().click()
+        # time.sleep(5)
+
+        # 点击相关'X'按钮
+        self.screenshot(image_name="close_btn.png")
+        self.close_btn().click()
+        time.sleep(2)
+
     def search_hszz(self, content):
         """
         搜索功能(皇室战争)
@@ -73,10 +109,6 @@ class SearchPage(Base):
 
         # 判断页面内容是否存在，同时截屏、然后断言
         self.assert_content_and_screenshot(image_name="hszz_2_target_page.png", content=content, error_msg="页面跳转失败！- 找不到'"+content+"'内容")
-
-        # 回退上一页
-        # self.back()
-        # time.sleep(5)
 
     def search_wx(self, content):
         """

@@ -182,8 +182,6 @@ def suite_sync_run_case(pro_name):
         send_DD_for_FXC(title=pro_name, text="#### '" + pro_name + "' 项目 未连接任何 Android 设备")
         return "Done"
 
-    thread_num = 1
-
     # 将'测试类'中的所有'测试方法'添加到 suite 对象中（每个'测试类'实例对象包含一个'测试方法'）
     from TestBase.test_case_unit import ParaCase
     suite, on_line_test_method_name_list = ParaCase.get_online_case_to_suite(pro_name, connected_android_device_list)
