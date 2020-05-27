@@ -6,16 +6,17 @@
 3.在'page_object'目录下提供：元素定位、页面操作方法
 4.在'case_test'目录下提供：测试用例
 5.在'Config > pro_config.py'文件中进行项目配置：
-（1）get_test_class_list： 通过'项目名'获取'测试类'列表
-（2）pro_exist：           判断项目名称是否存在
-（3）get_login_accout：    通过'线程名的索引' 获取登录账号
-（4）get_app_info：        通过'项目名称'，获取APP信息（ appPackage、 appActivity ）
-（5）config_android_device_with_appium_server_list：    配置 Android 设备信息 以及 对应的 Appium 服务
+（1）get_test_class_list：         通过'项目名'获取'测试类'列表
+（2）pro_exist：                   判断项目名称是否存在
+（3）get_login_accout：            通过'线程名的索引' 获取登录账号
+（4）get_app_info：                通过'项目名称'，获取APP信息（ appPackage、 appActivity ）
+（5）config_android_device_list：  配置 Android 设备信息列表
 
 
 
 【 未 解 决 的 问 题 】
-
+偶尔的问题：小米5S 若长时间未亮屏，第一次执行时，会有问题
+暂时的方案：设置默认等待时间30秒
 
 
 【 关于 本地 gulp 部 署 后 的 注 意 事 项 】
@@ -285,18 +286,16 @@ adb -s 15a6c95a shell input keyevent 26
      （3）在服务器中进行部署操作：停止nginx、mongo、uwsgi服务 -> 替换项目、uwsgi.ini配置文件 -> 替换config配置文件 -> 启动nginx、mongo、uwsgi服务
      （4）删除本地的临时文件夹
       命令：gulp "deploy docker" -> 编译后 部署docker服务
-    2.手动启动相关服务
-    （1）启动 Mac 中的 appium 服务、连接设备（坚果pro）
-    （2）启动 Docker 中的 appium 服务
-    （3）连接 Docker 中的 设备（小米5S）
-     （ 相关命令在 gulpfile.js 文件最后 ）
+    2.手动检测并确认
+     （1）检查：Android 设备在Docker中是否正确连接 ： docker exec -it android_openatx_auto_test adb devices
+     （2）若 第一次 安装 ATXserver 服务到设备，则需要在设备上进行授权操作
 
 
 ########################################################################################################################
 
 
 【 框 架 工 具 】
- Python3 + Appium + unittest + Flask + uWSGI + Nginx + Bootstrap + MongoDB + Docker + Fabric + Gulp
+ Python3 + uiautomator2 + unittest + Flask + uWSGI + Nginx + Bootstrap + MongoDB + Docker + Fabric + Gulp
 
 
 【 框 架 结 构 】（ 提高代码的：可读性、重用性、易扩展性 ）
@@ -317,15 +316,16 @@ adb -s 15a6c95a shell input keyevent 26
 
 【 功 能 点 】
 
-1.使用 Python3 + Appium + unittest + Bootstrap:
+1.使用 Python3 + uiautomator2 + unittest + Bootstrap:
 （1）使用'unittest'作为测试用例框架
 （2）通过动态修改和添加'unittest.TestSuite'类中的方法和属性，实现启用多线程同时执行多条测试用例
-（3）通过启用多个Appium服务来实现多线程执行多用例的功能
-（4）通过修改'HTMLTestRunner'文件并结合'unittest'测试框架，优化了测试报告的展示方式，并提供了每个测试用例的截图显示
-（5）所有用例执行后，若有'失败'或'错误'的用例，则发送钉钉和邮件通知
-（6）提供日志记录功能：按照日期区分
-（7）提供定时任务：定时删除过期(一周前)的文件：日志、报告、截图文件(mongo数据)，定时执行测试用例
-（8）提供页面展示项目用例，实现用例上下线、批量执行用例、显示报告、用例运行进度等功能
+（3）通过修改'HTMLTestRunner'文件并结合'unittest'测试框架，优化了测试报告的展示方式，并提供了每个测试用例的截图显示
+（4）所有用例执行后，若有'失败'或'错误'的用例，则发送钉钉和邮件通知
+（5）提供日志记录功能：按照日期区分
+（6）提供定时任务：定时删除过期(一周前)的文件：日志、报告、截图文件(mongo数据)，定时执行测试用例
+（7）提供页面展示项目用例，实现用例上下线、批量执行用例、显示报告、用例运行进度等功能
+（8）通过启用多个Appium服务来实现多线程执行多用例的功能
+
 
 2.使用 Flask ：
 （1）提供 执行用例的接口
@@ -354,4 +354,4 @@ adb -s 15a6c95a shell input keyevent 26
 （2）编译静态文件，防止浏览器缓存js问题
 （3）实时监听本地调试页面功能
 
-9.使用 Appium 服务、Android-SDK
+9.使用 uiautomator2、Android-SDK

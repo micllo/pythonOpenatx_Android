@@ -21,6 +21,12 @@ REPORT_PATH = "/test_report/"
 # Mongo 端口（ docker 多项目需要映射不同的端口 ）
 MONGO_PORT = "27057"
 
+# SDK 服务相关
+SDK_SERVER_HOST = SERVER_IP
+SDK_SERVER_PORT = "1322"
+SDK_SERVER_USER = "centos"
+SDK_SERVER_PASSWD = "centos"
+
 
 ############################################# 相 同 的 配 置 #############################################
 

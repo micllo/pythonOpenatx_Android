@@ -207,45 +207,56 @@ def stop_case_run_status(pro_name, test_method_name):
             return "mongo error"
 
 
-# def get_connected_android_devices_info(pro_name):
-#     """
-#     【 获取 已连接的 Android 设备信息列表 】
-#      1.获取 配置的 Android 设备信息列表
-#      2.通过 SSH 登录 SDK 服务器
-#      3.通过 adb 命令 查看 Android 设备 连接情况
-#      4.若 Android 设备 UDID 出现在查询结果中则保存入列表
-#
-#      :return: 已连接设备信息列表 ->
-#      [ { "thread_index": 1, "device_name": "小米5S", "platform_version": "7.0", "device_udid": "192.168.31.136:5555", "appium_server": "http://127.0.0.1:4723/wd/hub" } },
-#        { "thread_index": 2, "device_name": "坚果Pro", "platform_version": "7.1.1", "device_udid": "15a6c95a", "appium_server": "http://127.0.0.1:4724/wd/hub" } } ]
-#
-#     【 备注 】若 SSH 登录失败，则返回 空列表
-#     """
-#     # 获取 配置的 Android 设备信息列表
-#     from Config.pro_config import config_android_device_with_appium_server_list
-#     android_device_list = config_android_device_with_appium_server_list()
-#     device_num = 0
-#     connected_android_device_list = []
-#     try:
-#         # 通过 SSH 登录 SDK 服务器
-#         with settings(host_string="%s@%s:%s" % (cfg.SDK_SERVER_USER, cfg.SDK_SERVER_HOST, cfg.SDK_SERVER_PORT),
-#                       password=cfg.SDK_SERVER_PASSWD):
-#             # 通过 adb 命令 查看 Android 设备 连接情况
-#             cmd_res = run("adb devices", warn_only=True)
-#             # print(cmd_res)
-#             # print(type(cmd_res))
-#             # 若 Android 设备 UDID 出现在查询结果中则保存入列表
-#             for android_device_dict in android_device_list:
-#                 if android_device_dict["device_udid"] in cmd_res:
-#                     device_num += 1
-#                     connected_android_device_dict = android_device_dict
-#                     connected_android_device_dict["thread_index"] = device_num
-#                     connected_android_device_list.append(connected_android_device_dict)
-#     except Exception as e:
-#         log.info(str(e))
-#         send_DD_for_FXC(title=pro_name, text="#### 无法通过SSH登录Appium服务器检查Android设备连接情况")
-#     finally:
-#         return connected_android_device_list
+def get_connected_android_devices_info(pro_name):
+    """
+    【 获取 已连接的 Android 设备信息列表 】
+     1.获取 配置的 Android 设备信息列表
+     2.通过 adb 命令 查看 Android 设备 连接情况
+     3.若 Android 设备 UDID 出现在查询结果中，则修改该设备对应的'thread_index'，并保存入列表
+
+     :return: 已连接设备信息列表
+
+    【 备注 】若 SSH 登录失败，则返回 空列表
+    """
+    # 获取 配置的 Android 设备信息列表
+    from Config.pro_config import config_android_device_list
+    android_device_list = config_android_device_list()
+    device_num = 0
+    connected_android_device_list = []
+
+    # 通过 adb 命令 查看 Android 设备 连接情况
+    cmd_res = local("adb devices")
+    print(cmd_res)
+    print(type(cmd_res))
+    # 若 Android 设备 UDID 出现在查询结果中则保存入列表
+    for android_device_dict in android_device_list:
+        if android_device_dict["device_udid"] in cmd_res:
+            device_num += 1
+            connected_android_device_dict = android_device_dict
+            connected_android_device_dict["thread_index"] = device_num
+            connected_android_device_list.append(connected_android_device_dict)
+    return connected_android_device_list
+
+    # try:
+    #     # 通过 SSH 登录 SDK 服务器
+    #     with settings(host_string="%s@%s:%s" % (cfg.SDK_SERVER_USER, cfg.SDK_SERVER_HOST, cfg.SDK_SERVER_PORT),
+    #                   password=cfg.SDK_SERVER_PASSWD):
+    #         # 通过 adb 命令 查看 Android 设备 连接情况
+    #         cmd_res = run("adb devices", warn_only=True)
+    #         # print(cmd_res)
+    #         # print(type(cmd_res))
+    #         # 若 Android 设备 UDID 出现在查询结果中则保存入列表
+    #         for android_device_dict in android_device_list:
+    #             if android_device_dict["device_udid"] in cmd_res:
+    #                 device_num += 1
+    #                 connected_android_device_dict = android_device_dict
+    #                 connected_android_device_dict["thread_index"] = device_num
+    #                 connected_android_device_list.append(connected_android_device_dict)
+    # except Exception as e:
+    #     log.info(str(e))
+    #     send_DD_for_FXC(title=pro_name, text="#### 无法通过SSH登录监控服务器检查Android设备连接情况")
+    # finally:
+    #     return connected_android_device_list
 
 
 if __name__ == "__main__":

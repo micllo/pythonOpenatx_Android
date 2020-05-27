@@ -21,6 +21,12 @@ REPORT_PATH = "/test_report_local/"
 # Mongo 端口
 MONGO_PORT = "27017"
 
+# SDK 服务相关
+SDK_SERVER_HOST = "127.0.0.1"
+SDK_SERVER_PORT = "22"
+SDK_SERVER_USER = "micllo"
+SDK_SERVER_PASSWD = "abc123"
+
 
 ############################################# 相 同 的 配 置 #############################################
 

@@ -4,10 +4,9 @@ from unittest.suite import _isnotsuite
 from types import MethodType
 from Common.com_func import log, is_null
 from Common.test_func import generate_report, send_DD_for_FXC, send_warning_after_test, is_exist_start_case, \
-    stop_case_run_status, start_case_run_status
+    stop_case_run_status, start_case_run_status, get_connected_android_devices_info
 from Tools.decorator_tools import async
 import threading
-from Config.pro_config import config_android_device_list
 
 """
  [ 动态修改 suite.py 文件中 TestSuite 类中的 run 方法 ]
@@ -157,13 +156,18 @@ def suite_sync_run_case(pro_name):
 
         【 并 发 线 程 数 逻 辑 】
         前提：需要先手动检查：Android设备是否正确连接
-        1.获取已连接设备信息列表
+
+        2.通过 SSH 登录 SDK 服务器
+     3.通过 adb 命令 查看 Android 设备 连接情况
+
+
+        1.获取已连接设备信息列表（ 通过SSH登录 ）
          [ { "thread_index": 1, "device_name": "小米5S", "device_udid": "192.168.31.136:5555" } } ,
            { "thread_index": 2, "device_name": "坚果Pro", "device_udid": "192.168.31.253:4444"} } ]
         2.返回的列表数量 作为 线程数量
 
         【 每 个 用 例 使 用 Android 设 备 逻 辑 】
-        通过'当前线程名索引' 获取已连接设备列表中对应的'Android'设备信息
+        通过'当前线程名索引' 获取已连接设备列表中对应的'Android'设备信息 ( 需通过adb命令进行检测 )
 
     """
     # （定时任务）需要判断 是否存在运行中的用例
@@ -172,7 +176,7 @@ def suite_sync_run_case(pro_name):
         return "Done"
 
     # 获取 已连接的 Android 设备信息列表
-    connected_android_device_list = config_android_device_list()
+    connected_android_device_list = get_connected_android_devices_info(pro_name)
     # 列表数量 作为 线程数量
     thread_num = len(connected_android_device_list)
     log.info("\n线程数量 ： " + str(thread_num))

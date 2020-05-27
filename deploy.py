@@ -6,7 +6,7 @@ import time
 
 # 设置变量
 host = "127.0.0.1"
-port = "1222"
+port = "1322"
 user = "centos"
 passwd = "centos"
 pro_name = "pythonOpenatx_Android"
@@ -46,6 +46,7 @@ def local_action():
         local("rm -rf nohup.out")
         local("rm -rf tmp_uwsgi_pid.txt")
         local("rm -rf venv_install.sh")
+        local("rm -rf requirements.txt")
         local("rm -rf requirements_init.txt")
         local("ls")
     # 归档压缩 临时文件夹中的项目（ 可以不进入目录，直接执行 ）
@@ -85,6 +86,11 @@ def server_action():
         with cd(remote_tmp_path):
             run("rm -rf " + pro_name, warn_only=True)
             run("rm -rf " + pro_name + ".tar.gz", warn_only=True)
+
+        # 连接 Android 设备
+        run("adb kill-server", warn_only=True)
+        run("adb connect 192.168.31.136:5555", warn_only=True)   # 小米5S
+        run("adb connect 192.168.31.253:4444", warn_only=True)   # 坚果PRO
 
 
 if __name__ == "__main__":
