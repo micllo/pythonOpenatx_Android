@@ -138,10 +138,13 @@ def new_run(self, result, debug=False):
 
 
 @async
-def suite_sync_run_case(pro_name):
+def suite_sync_run_case(pro_name, connected_android_device_list=[]):
     """
     同时执行不同用例（ 通过动态修改'suite.py'文件中'TestSuite'类中的'run'方法，使得每个线程中的结果都可以记录到测试报告中 ）
     :param pro_name: 项目名称
+    :param connected_android_device_list: 已连接的设备列表 （ 以 列表数量 作为 线程数量 ）
+            （1）若 == [] ：表示当前是'定时任务'
+            （2）若 =! [] ：表示当前是'页面执行'，并且 已经获取到已连接的Android设备
 
         【 备 注 】
         1.suite 实例对象（包含了所有的测试用例实例，即继承了'unittest.TestCase'的子类的实例对象 test_instance ）
@@ -155,36 +158,33 @@ def suite_sync_run_case(pro_name):
         4.screen_shot_id_dict = { "测试类名.测试方法名":['aaa', 'bbb'], "测试类名.测试方法名":['cccc'] }
 
         【 并 发 线 程 数 逻 辑 】
-        前提：需要先手动检查：Android设备是否正确连接
+        1.通过 adb 命令 查看 Android 设备 连接情况 （ 已连接 | 未连接 | 未授权 ）
+        2.将'已连接'的设备列表数量 作为 并发线程数量
 
-        2.通过 SSH 登录 SDK 服务器
-     3.通过 adb 命令 查看 Android 设备 连接情况
-
-
-        1.获取已连接设备信息列表（ 通过SSH登录 ）
          [ { "thread_index": 1, "device_name": "小米5S", "device_udid": "192.168.31.136:5555" } } ,
            { "thread_index": 2, "device_name": "坚果Pro", "device_udid": "192.168.31.253:4444"} } ]
-        2.返回的列表数量 作为 线程数量
 
         【 每 个 用 例 使 用 Android 设 备 逻 辑 】
-        通过'当前线程名索引' 获取已连接设备列表中对应的'Android'设备信息 ( 需通过adb命令进行检测 )
+        通过'当前线程名索引' 获取已连接设备列表中对应的'Android'设备信息
 
     """
-    # （定时任务）需要判断 是否存在运行中的用例
-    if is_exist_start_case(pro_name):
-        send_DD_for_FXC(title=pro_name, text="#### '" + pro_name + "' 项目存在<运行中>的用例而未执行测试（定时任务）")
-        return "Done"
 
-    # 获取 已连接的 Android 设备信息列表
-    connected_android_device_list = get_connected_android_devices_info(pro_name)
-    # 列表数量 作为 线程数量
-    thread_num = len(connected_android_device_list)
-    log.info("\n线程数量 ： " + str(thread_num))
+    if is_null(connected_android_device_list):  # 表示当前是'定时任务'
+
+        # （定时任务）需要判断 是否存在运行中的用例
+        if is_exist_start_case(pro_name):
+            send_DD_for_FXC(title=pro_name, text="#### '" + pro_name + "' 项目存在<运行中>的用例而未执行测试（定时任务）")
+            return "Done"
+
+        # （定时任务）需要获取 已连接的 Android 设备信息列表
+        connected_android_device_list = get_connected_android_devices_info(pro_name)
+        if len(connected_android_device_list) == 0:
+            send_DD_for_FXC(title=pro_name, text="#### '" + pro_name + "' 项目 未连接任何 Android 设备")
+            return "Done"
+
+    # '已连接设备的' 列表数量 作为 线程数量
+    log.info("线程数量 ： " + str(len(connected_android_device_list)))
     log.info("已连接的Android设备信息列表：" + str(connected_android_device_list) + "\n")
-
-    if thread_num == 0:
-        send_DD_for_FXC(title=pro_name, text="#### '" + pro_name + "' 项目 未连接任何 Android 设备")
-        return "Done"
 
     # 将'测试类'中的所有'测试方法'添加到 suite 对象中（每个'测试类'实例对象包含一个'测试方法'）
     from TestBase.test_case_unit import ParaCase
@@ -201,7 +201,7 @@ def suite_sync_run_case(pro_name):
             setattr(suite, "android_device_name_dict", {})
 
             # 为实例对象'suite'<TestSuite>动态添加一个属性'thread_num'（目的：控制多线程数量）
-            setattr(suite, "thread_num", thread_num)
+            setattr(suite, "thread_num", len(connected_android_device_list))
 
             # 为实例对象'suite'<TestSuite>动态添加两个方法'run_test_custom'、'show_result_custom'（ 目的：供多线程中调用 ）
             suite.run_test_custom = MethodType(run_test_custom, suite)

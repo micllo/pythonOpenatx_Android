@@ -63,7 +63,7 @@ def run_case(pro_name):
                 if run_flag:
                     msg = EXIST_RUNNING_CASE
                 elif is_exist_online_case(pro_name):
-                    sync_run_case(pro_name)
+                    sync_run_case(pro_name, connected_android_device_list)
                     msg = CASE_RUNING
                 else:
                     msg = NO_ONLINE_CASE

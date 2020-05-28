@@ -24,14 +24,6 @@ class Config(object):
             # 执行时间段：周一到周六，10点30-31分之间，每隔10秒 执行一次
         }
         # {
-        #     'id': 'sync_run_case',
-        #     'func': 'TestBase.sync_run_case:suite_sync_run_case',
-        #     'args': ("pro_demo_1"),
-        #     'trigger': 'interval',
-        #     'seconds': 60
-        #     # 测试使用
-        # }
-        # {
         #     'id': 'clear_reports_logs',
         #     'func': 'Api.api_services.api_calculate:clear_reports_logs',
         #     'args': [10, "pro_demo_1"],
@@ -53,7 +45,7 @@ class Config(object):
     #     {
     #         'id': 'sync_run_case',
     #         'func': 'TestBase.sync_run_case:suite_sync_run_case',
-    #         'args': ("pro_demo_1"),
+    #         'args': ["pro_demo_1"],
     #         'trigger': 'interval',
     #         'seconds': 60
     #         # 测试使用

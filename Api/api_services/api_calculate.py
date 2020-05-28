@@ -17,14 +17,15 @@ api 服务底层的业务逻辑
 """
 
 
-def sync_run_case(pro_name):
+def sync_run_case(pro_name, connected_android_device_list):
     """
     同时执行不同的用例
     :param pro_name
+    :param connected_android_device_list: 已连接的设备列表
     :return:
     """
     from TestBase.sync_run_case import suite_sync_run_case
-    suite_sync_run_case(pro_name=pro_name)
+    suite_sync_run_case(pro_name=pro_name, connected_android_device_list=connected_android_device_list)
 
 
 def clear_reports_logs(time, pro_name):
