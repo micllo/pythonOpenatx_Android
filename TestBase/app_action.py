@@ -62,9 +62,9 @@ def get_android_driver(pro_name, current_thread_name_index, connected_android_de
     except Exception as e:
         log.error(("显示异常：" + str(e)))
         if "Uiautomator started failed" in str(e):
-            error_msg = pro_name + " 项目启动 ATX 服务时 未授权"
+            error_msg = pro_name + " 项目 " + device_name + " 设备 启动 ATX 服务时 未授权"
         else:
-            error_msg = pro_name + "项目 Uiautomator 启动 ATX 服务的其他异常情况"
+            error_msg = pro_name + "项目 " + device_name + " 设备 启动 ATX 服务的其他异常情况"
         send_DD_for_FXC(title=pro_name, text="#### " + error_msg + "")
         raise Exception(error_msg)
     finally:

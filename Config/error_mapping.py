@@ -11,6 +11,7 @@ INSERT_SUCCESS = u"插入数据成功"
 UPDATE_SUCCESS = u"更新成功"
 
 # 500
+ANDROID_DEVICES_NOT_CONNECT = u"没有任何已连接的Android设备"
 NO_SUCH_FILE = u"该文件不存在"
 NO_SUCH_PRO = u"该项目不存在"
 INTERNAL_SERVER_ERROR = u"内部错误:服务器正在维护中"
@@ -64,6 +65,7 @@ def get_error_code(code_msg):
         INSERT_SUCCESS: 31200,
 
         # 500
+        ANDROID_DEVICES_NOT_CONNECT: 31500,
         NO_SUCH_FILE: 31500,
         NO_SUCH_PRO: 31500,
         INTERNAL_SERVER_ERROR: 31500,

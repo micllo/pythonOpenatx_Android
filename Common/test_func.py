@@ -6,7 +6,7 @@ from Common.com_func import send_mail, mkdir, send_DD, log
 from Env import env_config as cfg
 from dateutil import parser
 from Tools.date_helper import get_current_iso_date
-from fabric.api import *
+import subprocess
 
 
 def generate_report(pro_name, suite, title, description, tester, verbosity=1):
@@ -212,7 +212,11 @@ def get_connected_android_devices_info(pro_name):
     【 获取 已连接的 Android 设备信息列表 】
      1.获取 配置的 Android 设备信息列表
      2.通过 adb 命令 查看 Android 设备 连接情况
-     3.若 Android 设备 UDID 出现在查询结果中，则修改该设备对应的'thread_index'，并保存入列表
+     （1）192.168.31.136:5555 device       （ 已连接 ）
+     （2）192.168.31.253:4444 offline      （ 未连接 ）
+     （3）192.168.31.136:5555 unauthorized （ 未授权 ）
+     3.将'已连接'的设备修改其对应的'thread_index'，并保存入列表
+     4.将'未连接、未授权'的设备，发送钉钉通知
 
      :return: 已连接设备信息列表
 
@@ -225,38 +229,21 @@ def get_connected_android_devices_info(pro_name):
     connected_android_device_list = []
 
     # 通过 adb 命令 查看 Android 设备 连接情况
-    cmd_res = local("adb devices")
+    cmd_res = subprocess.check_output(["adb", "devices"])
     print(cmd_res)
     print(type(cmd_res))
     # 若 Android 设备 UDID 出现在查询结果中则保存入列表
     for android_device_dict in android_device_list:
-        if android_device_dict["device_udid"] in cmd_res:
+        if android_device_dict["device_udid"] + "\\tdevice" in str(cmd_res):
             device_num += 1
             connected_android_device_dict = android_device_dict
             connected_android_device_dict["thread_index"] = device_num
             connected_android_device_list.append(connected_android_device_dict)
+        if android_device_dict["device_udid"] + "\\toffline" in str(cmd_res):
+            send_DD_for_FXC(title=pro_name, text="#### " + pro_name + " 项目 " + android_device_dict["device_name"] + " 设 备 未 连 接 ")
+        if android_device_dict["device_udid"] + "\\tunauthorized" in str(cmd_res):
+            send_DD_for_FXC(title=pro_name, text="#### " + pro_name + " 项目 " + android_device_dict["device_name"] + " 设 备 未 授 权 ")
     return connected_android_device_list
-
-    # try:
-    #     # 通过 SSH 登录 SDK 服务器
-    #     with settings(host_string="%s@%s:%s" % (cfg.SDK_SERVER_USER, cfg.SDK_SERVER_HOST, cfg.SDK_SERVER_PORT),
-    #                   password=cfg.SDK_SERVER_PASSWD):
-    #         # 通过 adb 命令 查看 Android 设备 连接情况
-    #         cmd_res = run("adb devices", warn_only=True)
-    #         # print(cmd_res)
-    #         # print(type(cmd_res))
-    #         # 若 Android 设备 UDID 出现在查询结果中则保存入列表
-    #         for android_device_dict in android_device_list:
-    #             if android_device_dict["device_udid"] in cmd_res:
-    #                 device_num += 1
-    #                 connected_android_device_dict = android_device_dict
-    #                 connected_android_device_dict["thread_index"] = device_num
-    #                 connected_android_device_list.append(connected_android_device_dict)
-    # except Exception as e:
-    #     log.info(str(e))
-    #     send_DD_for_FXC(title=pro_name, text="#### 无法通过SSH登录监控服务器检查Android设备连接情况")
-    # finally:
-    #     return connected_android_device_list
 
 
 if __name__ == "__main__":
