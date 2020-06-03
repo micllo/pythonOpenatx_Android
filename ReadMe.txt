@@ -9,9 +9,8 @@
 （1）get_test_class_list：         通过'项目名'获取'测试类'列表
 （2）pro_exist：                   判断项目名称是否存在
 （3）get_login_accout：            通过'线程名的索引' 获取登录账号
-（4）get_app_info：                通过'项目名称'，获取APP信息（ appPackage、 appActivity ）
+（4）get_app_info：                通过项目名称 获取APP信息 （ appPackage ）
 （5）config_android_device_list：  配置 Android 设备信息列表
-
 
 
 【 未 解 决 的 问 题 】
@@ -20,10 +19,8 @@
 
 
 【 关于 本地 gulp 部 署 后 的 注 意 事 项 】
-
-1.检查：Android设备是否正确连接 adb devices
-
-2.若 第一次 安装 ATXserver 服务到设备，则需要在设备上进行授权操作
+1.第一次 adb 连接 Android 设备 需要在设备上授权
+2.第一次 安装 ATXserver 服务到设备 需要在设备上授权
 
 
 ########################################################################################################################
@@ -32,7 +29,7 @@
 【 本 地 配 置 项 目 开 发 环 境 】
 
 1.配置本地 venv 虚拟环境
-（1）修改：requirements.txt
+（1）修改：requirements_init.txt
 （2）执行：sh -x venv_install.sh
 
 2.配置 gulpfile 依赖
@@ -93,11 +90,11 @@ sudo nginx -s reload
 ########################################################################################################################
 
 
-【 配 置 Openatx uiautomator2 Android 环 境 】
+【 配 置 Openatx/uiautomator2 Android 环 境 】
 
 1.安装工具
 （1）安装 android-sdk 工具（提供adb命令连接真机或模拟器、提供uiautomatorviewer 定位元素）
-（2）安装 uiautomator2 服务：pip3 install -U uiautomator2（提供openatx服务）
+（2）安装 uiautomator2 工具：pip3 install -U uiautomator2（提供openatx服务）
 
 2.连接设备
 （1）adb连真机：adb connect 192.168.31.136:5555 < 小米5S >
@@ -171,65 +168,25 @@ pip3 install -v flask==0.12 -i http://mirrors.aliyun.com/pypi/simple/ --trusted-
 （2）找到 设备的ip地址：设置 -> 关于本机 -> 本机状态信息 -> IP地址
 （3）通过ip地址连接设备：adb connect 192.168.31.136:5555
 
-------------------------------------------
-
-【 Android 管理工具 ADB 命令 】
-
-查看设备：adb devices
-
-查看adb版本：adb version
-
-停止adb服务：adb kill-server
-
-查看某设备的屏幕分辨率：adb -s xxxxx shell wm size
-
-查看设备包含的应用程序
-（1）查看所有应用：adb -s 192.168.31.56:5555 shell pm list packages
-（2）查看淘宝应用：adb -s 192.168.31.56:5555 shell pm list packages | grep taobao
-
-安装/卸载应用：
-（1）安装（应用宝）：adb -s 192.168.31.136:5555 install yyb.apk
-（2）卸载（应用宝）：adb -s 192.168.31.136:5555 uninstall < packagename >
-                    package: name='com.tencent.android.qqdownloader'
-                    launchable-activity: name='com.tencent.pangu.link.SplashActivity'
-
-清除应用数据与缓存:
-adb -s 192.168.31.56:5555 shell pm clear < packagename >
-
-查看应用正在运行services
-adb -s 192.168.31.56:5555 shell dumpsys activity services < packagename >
-
-查看应用详细信息:
-adb -s 192.168.31.56:5555 shell dumpsys package < packagename >
-
-唤醒设备屏幕：
-adb -s 15a6c95a shell input keyevent 26
-
-
-
 
 ########################################################################################################################
 
 
+【 服 务 端 配 置 Openatx/uiautomator2 Android 环 境 】
 
-【 服 务 端 配 置 Openatx uiautomator2 Android 环 境 】
+[ 未 解 决 的 问 题 ]
+'Docker'中无法获取通过'USB'连接的真机设备
 
-备注：
-    生产环境为了减少意外情况，尽量使用无线连接真机
-    使用无线连接真机，则需要确保 Docker环境 与 真机 处于同一个网络下
+[ 前 提 条 件 ]
+1.生产环境为了减少意外情况，尽量使用无线连接真机
+2.刷机成功的真机 可以直接在手机的超级终端上开启监听端口（ 直接无线连接 ）
+3.不能刷机的真机 可以使用USB通过电脑为该手机开启监听端口 （ 使用一次USB后，可以无线连接 ）
+（ 注：服务器 与 设备 要处于同一网络下 ）
 
-未解决的问题：
-    'Docker'中无法获取通过'USB'连接的真机设备
-
-环境配置 方案一：
-    若 有些监控的真机无法获取root权限(刷机失败)
-    则 在 win10 | mac_mini 上 安装：Android-SDK、uiautomator2服务、监控服务
-
-
-环境配置 方案二：
-    若 待监控的真机全部都可以获取root权限(刷机成功)
-    则 在 linux | win10 | mac_mini 上启用一个Docker容器：Android-SDK、uiautomator2服务、监控服务
-      ( 备注：若 使用 linux 则要确保 linux 与 手机 处于同一网络 )
+[ 环 境 配 置 方 案 ]
+1.在 linux | win10 | mac_mini 上启用一个Docker容器
+2.Docker容器包含的工具或服务：Android-SDK工具、uiautomator2工具、监控服务
+ ( 注：若 使用 linux 则要确保 linux 与 手机 处于同一网络 )
 
 
 ------------------------------------------
@@ -295,7 +252,7 @@ adb -s 15a6c95a shell input keyevent 26
 
 
 【 框 架 工 具 】
- Python3 + uiautomator2 + unittest + Flask + uWSGI + Nginx + Bootstrap + MongoDB + Docker + Fabric + Gulp
+ Python3 + Openatx/uiautomator2 + unittest + Flask + uWSGI + Nginx + Bootstrap + MongoDB + Docker + Fabric + Gulp
 
 
 【 框 架 结 构 】（ 提高代码的：可读性、重用性、易扩展性 ）
@@ -316,7 +273,7 @@ adb -s 15a6c95a shell input keyevent 26
 
 【 功 能 点 】
 
-1.使用 Python3 + uiautomator2 + unittest + Bootstrap:
+1.使用 Python3 + Openatx/uiautomator2 + unittest + Bootstrap:
 （1）使用'unittest'作为测试用例框架
 （2）通过动态修改和添加'unittest.TestSuite'类中的方法和属性，实现启用多线程同时执行多条测试用例
 （3）通过修改'HTMLTestRunner'文件并结合'unittest'测试框架，优化了测试报告的展示方式，并提供了每个测试用例的截图显示
@@ -324,8 +281,7 @@ adb -s 15a6c95a shell input keyevent 26
 （5）提供日志记录功能：按照日期区分
 （6）提供定时任务：定时删除过期(一周前)的文件：日志、报告、截图文件(mongo数据)，定时执行测试用例
 （7）提供页面展示项目用例，实现用例上下线、批量执行用例、显示报告、用例运行进度等功能
-（8）通过启用多个Appium服务来实现多线程执行多用例的功能
-
+（8）多线程并发处理方式：先通过adb命令查看Android设备连接情况(已连接|未连接|未授权)、再将'已连接'的设备列表数量 作为 并发线程数量
 
 2.使用 Flask ：
 （1）提供 执行用例的接口
@@ -354,4 +310,4 @@ adb -s 15a6c95a shell input keyevent 26
 （2）编译静态文件，防止浏览器缓存js问题
 （3）实时监听本地调试页面功能
 
-9.使用 uiautomator2、Android-SDK
+9.使用的工具和服务：Android-SDK 工具、uiautomator2 工具 ( ATX 服务 )

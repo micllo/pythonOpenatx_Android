@@ -160,7 +160,6 @@ def suite_sync_run_case(pro_name, connected_android_device_list=[]):
         【 并 发 线 程 数 逻 辑 】
         1.通过 adb 命令 查看 Android 设备 连接情况 （ 已连接 | 未连接 | 未授权 ）
         2.将'已连接'的设备列表数量 作为 并发线程数量
-
          [ { "thread_index": 1, "device_name": "小米5S", "device_udid": "192.168.31.136:5555" } } ,
            { "thread_index": 2, "device_name": "坚果Pro", "device_udid": "192.168.31.253:4444"} } ]
 
@@ -215,7 +214,7 @@ def suite_sync_run_case(pro_name, connected_android_device_list=[]):
                                                                description='详细测试用例结果', tester="自动化测试", verbosity=2)
 
             # 测试后发送预警
-            # send_warning_after_test(test_result, current_report_file)
+            send_warning_after_test(pro_name, test_result, current_report_file)
 
 
 if __name__ == "__main__":

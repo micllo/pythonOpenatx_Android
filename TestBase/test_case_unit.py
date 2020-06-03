@@ -75,10 +75,9 @@ class ParaCase(unittest.TestCase):
         :return:
         """
         # 停止APP应用
-        self.session.close()
-
+        # self.session.close()
         # 通过'Android'驱动 关闭APP应用
-        # self.driver.app_stop(self.app_package)
+        self.driver.app_stop(self.app_package)
 
     @staticmethod
     def get_online_case_to_suite(pro_name, connected_android_device_list=[]):

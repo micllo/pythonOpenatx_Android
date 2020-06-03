@@ -19,12 +19,11 @@ def get_android_driver(pro_name, current_thread_name_index, connected_android_de
     :return:
 
     【 步 骤 】
-    1.获取 Appium 服务启动应用所需的能力参数 (指定设备，指定应用)
-    2.通过'当前线程名索引' 获取已连接设备列表中对应的'Android'设备信息和'Appium'服务
-    3.获取设备驱动
+    1.通过'当前线程名索引' 获取已连接设备列表中对应的'Android'设备信息和'Appium'服务
+    2.获取设备驱动
     """
 
-    # 通过'当前线程名索引' 获取已连接设备列表中对应的'Android'设备信息和'Appium'服务
+    # 通过'当前线程名索引' 获取已连接设备列表中对应的'Android'设备信息
     device_name = None
     device_udid = None
     for connected_android_devices_dict in connected_android_device_list:
@@ -229,6 +228,14 @@ class Base(object):
         x1 = int(l[0] * 0.05)  # 起始 x 坐标
         x2 = int(l[0] * 0.75)  # 终点 x 坐标
         self.session.swipe(x1, y, x2, y)
+
+    # 回退
+    def to_back(self):
+        self.session.press("back")
+
+    # home健
+    def to_home(self):
+        self.session.press("home")
 
 
 if __name__ == "__main__":
