@@ -6,6 +6,7 @@ from Env import env_config as cfg
 from Common.test_func import mongo_exception_send_DD
 from TestBase.app_action import get_android_driver
 from Common.test_func import send_DD_for_FXC
+from Config import global_var as gv
 
 
 class ParaCase(unittest.TestCase):
@@ -64,6 +65,9 @@ class ParaCase(unittest.TestCase):
                 error_msg = self.pro_name + " 项目启动APP时 出现异常情况"
             send_DD_for_FXC(title=self.pro_name, text="#### " + error_msg + "")
             raise Exception(error_msg)
+
+        # 设置 session 默认的元素定位超时时间 (注：在本框架中作用不大，见 find_ele 方法)
+        # self.session.implicitly_wait(gv.IMPLICITY_WAIT)
 
         # 获取当前APP的信息 {'package': '', 'activity': ''}
         # self.log.info(self.driver.app_current())

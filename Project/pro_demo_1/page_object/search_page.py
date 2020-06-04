@@ -38,10 +38,10 @@ class SearchPage(Base):
 
     # 获取"搜索内容"tab
     def get_search_ele(self, content):
-        # return self.find_ele(textMatches=content, className="android.widget.TextView")
-        return self.find_ele_by_child_text(text=content, class_name="android.widget.TextView",
-                                           className="android.widget.LinearLayout",
-                                           resourceId="com.tencent.android.qqdownloader:id/a78")
+        return self.find_ele(textMatches=content, className="android.widget.TextView")
+        # return self.find_ele_by_child_text(text=content, class_name="android.widget.TextView",
+        #                                    className="android.widget.LinearLayout",
+        #                                    resourceId="com.tencent.android.qqdownloader:id/a78")
 
     """
         【 页 面 功 能 】

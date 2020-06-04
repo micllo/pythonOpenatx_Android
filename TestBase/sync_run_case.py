@@ -214,7 +214,7 @@ def suite_sync_run_case(pro_name, connected_android_device_list=[]):
                                                                description='详细测试用例结果', tester="自动化测试", verbosity=2)
 
             # 测试后发送预警
-            send_warning_after_test(pro_name, test_result, current_report_file)
+            # send_warning_after_test(pro_name, test_result, current_report_file)
 
 
 if __name__ == "__main__":

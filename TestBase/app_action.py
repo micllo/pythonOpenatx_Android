@@ -52,8 +52,8 @@ def get_android_driver(pro_name, current_thread_name_index, connected_android_de
         # 配置accessibility服务的最大空闲时间，超时将自动释放
         driver.set_new_command_timeout(gv.NEW_COMMAND_TIMEOUT)
 
-        # 全局默认的元素定位超时时间
-        driver.implicitly_wait(gv.IMPLICITY_WAIT)
+        # 设置 client 默认的元素定位超时时间 (注：在本框架中作用不大，见 find_ele 方法)
+        # driver.implicitly_wait(gv.IMPLICITY_WAIT)
 
         # 解锁（点亮屏幕）相当于点击了home健
         driver.unlock()
@@ -80,21 +80,11 @@ class Base(object):
         self.log = log
 
     def find_ele(self, **kwargs):
-        try:
-            ele = self.session(**kwargs)
-            self.log.info(ele.info)  # 作用：为了捕获异常
+        ele = self.session(**kwargs)
+        if ele.wait(timeout=gv.IMPLICITY_WAIT, exists=True):  # 设置 Session 定位等待时间
             return ele
-        except Exception as e:
-            self.log.error("异常信息： " + str(e))
-            if "Uiautomator started failed" in str(e):
-                error_msg = "启动 ATX 服务时 未授权"
-            elif "UiObjectNotFoundException" in str(e):
-                error_msg = "元素定位失败！"
-            elif "SessionBrokenError" in str(e):
-                error_msg = "APP没有运行"
-            else:
-                error_msg = "元素定位的其他异常"
-            raise Exception(error_msg)
+        else:
+            raise Exception("元素定位失败")
 
     def find_ele_by_child_text(self, text, class_name, **kwargs):
         """
@@ -103,19 +93,11 @@ class Base(object):
         :param class_name:
         :return:
         """
-        try:
-            ele = self.find_ele(**kwargs).child_by_text(text, className=class_name)
-            self.log.info(ele.info)  # 作用：为了捕获异常
+        ele = self.find_ele(**kwargs).child_by_text(text, className=class_name)
+        if ele.wait(timeout=gv.IMPLICITY_WAIT, exists=True):  # 设置 Session 定位等待时间
             return ele
-        except Exception as e:
-            self.log.error("异常信息： " + str(e))
-            if "UiObjectNotFoundException" in str(e):
-                error_msg = "text = \"" + text + "\" 的元素未找到"
-            elif "SessionBrokenError" in str(e):
-                error_msg = "APP没有运行"
-            else:
-                error_msg = "text元素定位异常"
-            raise Exception(error_msg)
+        else:
+            raise Exception("text = \"" + text + "\" 的元素未找到")
 
     def click(self, *args):
         self.find_ele(*args).click()
