@@ -29,8 +29,7 @@ import threading
 
  test(result) ：等同于 test_instance(result)
  -> 表示 调用'unittest.TestCase'中的__call__方法执行该类中的 run 方法
- -> 理解：实例对象'test'通过'__call__'方法将自己变成一个函数来调用
-
+ -> 理解：实例对象'test'通过'__call__'方法将自己变成一个函数来调用        
 """
 
 
@@ -63,8 +62,10 @@ def run_test_custom(self, test, result, debug, index):
     # (self)实例对象'suite'<TestSuite> 为每个执行完毕的(test)'测试用例'实例 保存'截图ID列表'
     self.screen_shot_id_dict[test.class_method_name] = test.screen_shot_id_list
 
-    # (self)实例对象'suite'<TestSuite> 为每个执行完毕的(test)'测试用例'实例 保存'使用的Android设备名称'
-    self.android_device_name_dict[test.class_method_name] = test.device_name
+    # (self)实例对象'suite'<TestSuite> 为每个执行完毕的(test)'测试用例'实例 保存'使用的设备信息：name、width、height'
+    # ->  { "测试类名.测试方法名": {"device_name": "小米5S", "device_width": "540", "device_height": "960"},
+    #       "测试类名.测试方法名": {"device_name": "坚果PRO", "device_width": "540", "device_height": "960"} }
+    self.android_device_info_dict[test.class_method_name] = test.device_info
 
     if self._cleanup:
         self._removeTestAtIndex(index)
@@ -196,8 +197,8 @@ def suite_sync_run_case(pro_name, connected_android_device_list=[]):
             # 为实例对象'suite'<TestSuite>动态添加一个属性'screen_shot_id_dict'（目的：保存截图ID）
             setattr(suite, "screen_shot_id_dict", {})
 
-            # 为实例对象'suite'<TestSuite>动态添加一个属性'android_device_name_dict'（目的：保存使用的Android设备名称）
-            setattr(suite, "android_device_name_dict", {})
+            # 为实例对象'suite'<TestSuite>动态添加一个属性'android_device_info_dict'（目的：保存使用的设备信息：name、width、height）
+            setattr(suite, "android_device_info_dict", {})
 
             # 为实例对象'suite'<TestSuite>动态添加一个属性'thread_num'（目的：控制多线程数量）
             setattr(suite, "thread_num", len(connected_android_device_list))
