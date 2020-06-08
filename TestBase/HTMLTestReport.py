@@ -780,7 +780,7 @@ class HTMLTestRunner(Template_mixin):
         # 获取测试方法中的 __doc__, 并加上（使用的Android设备名称）
         doc = t.shortDescription() or ""
         desc = doc and ('%s: %s' % (name, doc)) or name
-        desc = desc + " <" + device_name + ">"
+        desc = desc + " [" + device_name + "]"
 
         # 若n==0表示通过，则使用'通过'的样式，否则使用'失败'或'错误'的样式
         tmpl = n == 0 and self.REPORT_TEST_FOR_PASS_TMPL or self.REPORT_TEST_FOR_EF_TMPL
