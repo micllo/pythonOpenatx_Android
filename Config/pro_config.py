@@ -59,20 +59,18 @@ def get_app_package(pro_name):
 def config_android_device_list():
     """
     配置 Android 设备信息 列表
-    [ { "thread_index": 1, "device_name": "小米5S", "device_udid": "192.168.31.136:5555" } } ,
-      { "thread_index": 2, "device_name": "坚果Pro", "device_udid": "192.168.31.253:4444" } } ]
+    [ { "device_name": "小米5S", "device_udid": "192.168.31.136:5555" } } ,
+      { "device_name": "坚果Pro", "device_udid": "192.168.31.253:4444" } } ]
     :return:
     """
     android_device_info_list = []
 
     xiao_mi_5s = dict()
-    xiao_mi_5s["thread_index"] = 1
     xiao_mi_5s["device_name"] = "小米5S"
     xiao_mi_5s["device_udid"] = "192.168.31.136:5555"
     android_device_info_list.append(xiao_mi_5s)
 
     smartisan_pro = dict()
-    smartisan_pro["thread_index"] = 2
     smartisan_pro["device_name"] = "坚果Pro"
     smartisan_pro["device_udid"] = "192.168.31.253:4444"
     android_device_info_list.append(smartisan_pro)

@@ -217,8 +217,11 @@ def get_connected_android_devices_info(pro_name):
      （1）192.168.31.136:5555 device       （ 已连接 ）
      （2）192.168.31.253:4444 offline      （ 未连接 ）
      （3）192.168.31.136:5555 unauthorized （ 未授权 ）
-     3.将'已连接'的设备修改其对应的'thread_index'，并保存入列表
+     3.将'已连接'的设备增加其对应的'thread_index'，并保存入列表
      4.将'未连接、未授权'的设备，发送钉钉通知
+
+     [ { "thread_index": 1, "device_name": "小米5S", "device_udid": "192.168.31.136:5555" } } ,
+       { "thread_index": 2, "device_name": "坚果Pro", "device_udid": "192.168.31.253:4444"} } ]
 
      :return: 已连接设备信息列表
 
