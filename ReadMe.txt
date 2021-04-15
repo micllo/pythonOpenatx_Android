@@ -229,11 +229,11 @@ pip3 install -v flask==0.12 -i http://mirrors.aliyun.com/pypi/simple/ --trusted-
     ( 备注：uwgsi 启动 8081 端口、nginx 配置 80 反向代理 8081 )
 
 7.访问地址（ 外部访问 ）：
-（1）用例页面 -> http://192.168.31.10:1080/api/Android/index
-（2）测试报告 -> http://192.168.31.10:1080/test_report/<pro_name>/[Android_report]<pro_name>.html
-（3）接口地址 -> http://192.168.31.10:1080/api/
-               http://192.168.31.10:1080/api/Android/sync_run_case
-               http://192.168.31.10:1080/api/Android/get_img/5e5cac9188121299450740b3
+（1）用例页面 -> http://192.168.31.9:1080/api/Android/index
+（2）测试报告 -> http://192.168.31.9:1080/test_report/<pro_name>/[Android_report]<pro_name>.html
+（3）接口地址 -> http://192.168.31.9:1080/api/
+               http://192.168.31.9:1080/api/Android/sync_run_case
+               http://192.168.31.9:1080/api/Android/get_img/5e5cac9188121299450740b3
     ( 备注：docker 配置 1080 映射 80 )
 
 8.关于部署
@@ -244,8 +244,9 @@ pip3 install -v flask==0.12 -i http://mirrors.aliyun.com/pypi/simple/ --trusted-
      （4）删除本地的临时文件夹
       命令：gulp "deploy docker" -> 编译后 部署docker服务
     2.手动检测并确认
-     （1）检查：Android 设备在Docker中是否正确连接 ： docker exec -it android_openatx_auto_test adb devices
-     （2）若 第一次 安装 ATXserver 服务到设备，则需要在设备上进行授权操作
+     （1）先要在 MAC 本地断开设备连接
+     （2）检查：Android 设备在Docker中是否正确连接 ： docker exec -it android_openatx_auto_test adb devices
+     （3）若 第一次 安装 ATXserver 服务到设备，则需要在设备上进行授权操作
 
 
 ########################################################################################################################
@@ -262,7 +263,7 @@ pip3 install -v flask==0.12 -i http://mirrors.aliyun.com/pypi/simple/ --trusted-
  4.Config层：    错误码映射、全局变量、定时任务、项目配置、测试地址配置
  5.Env层：       环境配置
  6.Project层：   区分不同项目、page_object(页面操作方法、元素定位)、test_case(测试用例)
- 7.TestBase层：  封装了浏览器驱动操作方法、提供'测试用例'父类第基础方法(继承’unittest.TestCase')、测试报告生成、同步执行用例方法
+ 7.TestBase层：  封装了APP驱动操作方法、提供'测试用例'父类第基础方法(继承’unittest.TestCase')、测试报告生成、同步执行用例方法
  8.Tools层：     工具函数
  9.其他：
  （1）vassals/ -> 服务器的'uWSGI配置'

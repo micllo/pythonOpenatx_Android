@@ -8,10 +8,11 @@ from Common.test_func import send_DD_for_FXC
 import uiautomator2
 
 
-def get_android_driver(pro_name, current_thread_name_index, connected_android_device_list):
+def get_android_driver(pro_name, test_method, current_thread_name_index, connected_android_device_list):
     """
     【 获取'Android'驱动、设备名称 】
-    :param pro_name
+    :param pro_name   项目名称
+    :param test_method  用例名称
     :param current_thread_name_index: 当前线程名字的索引
     :param connected_android_device_list: 已连接设备信息列表
     [ { "thread_index": 1, "device_name": "小米5S",  "device_udid": "192.168.31.136:5555"} } ,
@@ -32,6 +33,8 @@ def get_android_driver(pro_name, current_thread_name_index, connected_android_de
             device_name = connected_android_devices_dict["device_name"]
             break
     log.info("\n\n")
+    log.info("pro_name -> " + pro_name)
+    log.info("test_method -> " + test_method)
     log.info("device_name -> " + device_name)
     log.info("device_udid -> " + device_udid)
     log.info("\n\n")
@@ -133,6 +136,7 @@ class Base(object):
         3.由于'Base'类和'测试用例类'都含有'driver'属性，所以不影响self.driver的使用
         :return:
         """
+        time.sleep(1)
         # 判断当前的'实例对象'是否是'Base'类型（考虑子类的继承关系）
         case_instance = isinstance(self, Base) and self.case_instance or self
         # 获取当前测试用例的路径 -> ../类名/方法名/
@@ -179,7 +183,7 @@ class Base(object):
         # log.info(x, y)
         return x, y
 
-    # 屏幕向上滑动（效果：屏幕往'下'翻动）
+    # 屏幕向上滑动（效果：屏幕往'下'翻动）< 左上角为坐标原点 >
     def swipe_up(self):
         l = self.get_size()
         x = int(l[0] * 0.5)  # 固定 x 坐标

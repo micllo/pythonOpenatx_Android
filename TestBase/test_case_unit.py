@@ -46,7 +46,8 @@ class ParaCase(unittest.TestCase):
         self.user, self.passwd = get_login_accout(self.current_thread_name_index)
 
         # 获取'Android'驱动、设备名称
-        self.driver, self.device_name = get_android_driver(self.pro_name, self.current_thread_name_index,
+        self.driver, self.device_name = get_android_driver(self.pro_name, self.test_method,
+                                                           self.current_thread_name_index,
                                                            self.connected_android_device_list)
 
         # 获取设备屏幕分辩率(width、height)，供报告中的截图适用（除以2）

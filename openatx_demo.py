@@ -9,7 +9,7 @@ def getSize(driver):
     return x, y
 
 
-# 屏幕向上滑动（效果：屏幕往'下'翻动）
+# 屏幕向上滑动（效果：屏幕往'下'翻动）< 左上角为坐标原点 >
 def swipeUp(driver):
     l = getSize(driver)
     x = int(l[0] * 0.5)    # 固定 x 坐标
@@ -49,6 +49,9 @@ def swipRight(driver):
 
 # 连接设备(小米 5S) ADB_WIFI
 d = uiautomator2.connect_adb_wifi('192.168.31.136:5555')
+# 连接设备(锤子 pro) ADB_WIFI
+# d = uiautomator2.connect_adb_wifi('192.168.31.253:4444')
+
 
 # 连接设备(小米 5S) WIFI
 # d = uiautomator2.connect('192.168.31.136')
@@ -143,7 +146,7 @@ time.sleep(2)
 
 # 获取搜索按钮，并点击
 # sess(resourceId="com.tencent.android.qqdownloader:id/a5t").click_exists(3.0)
-search_filed = sess(text="搜索", className="android.widget.TextView").click()  #
+search_filed = sess(text="搜索", className="android.widget.TextView").click()
 # search_filed = sess(textContains="索", className="android.widget.TextView").click()  # 匹配text文本包含的内容
 # search_filed = sess(textStartsWith="搜", className="android.widget.TextView").click()  # 匹配text文本的开头
 time.sleep(2)
@@ -173,8 +176,8 @@ hszz_tab.click()
 
 time.sleep(2)
 
-sess.close()
-# d.app_stop(appPackage)
+# sess.close()
+d.app_stop(appPackage)
 print("停止应用")
 
 time.sleep(2)

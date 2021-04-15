@@ -7,7 +7,7 @@ SCREENSHOTS_DIR = "/opt/project/screenshots/"
 
 # 服务器地址
 # SERVER_IP_PORT = "192.168.3.102"  #  MERCURY_1602
-SERVER_IP = "192.168.31.10"  # Demba Ba
+SERVER_IP = "192.168.31.9"  # Demba Ba
 
 # Nginx 端口
 NGINX_PORT = "1080"
