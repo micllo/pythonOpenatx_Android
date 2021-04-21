@@ -6,10 +6,10 @@
 3.在'page_object'目录下提供：元素定位、页面操作方法
 4.在'case_test'目录下提供：测试用例
 5.在'Config > pro_config.py'文件中进行项目配置：
-（1）get_test_class_list：         通过'项目名'获取'测试类'列表
-（2）pro_exist：                   判断项目名称是否存在
-（3）get_login_accout：            通过'线程名的索引' 获取登录账号
-（4）get_app_info：                通过项目名称 获取APP信息 （ appPackage ）
+（1）pro_name_list：               配置 项目名称列表
+（2）get_test_class_list：         通过'项目名'获取'测试类'列表
+（3）get_app_info：                通过项目名称 获取APP信息 （ appPackage ）
+（4）get_login_accout：            通过'线程名的索引' 获取登录账号
 （5）config_android_device_list：  配置 Android 设备信息列表
 
 

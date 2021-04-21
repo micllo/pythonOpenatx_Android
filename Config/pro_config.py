@@ -1,5 +1,7 @@
-from Env import env_config as cfg
 from Project.pro_demo_1.test_case.demo_test import YybTest
+
+# 配置 项目名称列表
+pro_name_list = ["pro_demo_1", "pro_demo_2"]
 
 
 def get_test_class_list(pro_name):
@@ -15,17 +17,18 @@ def get_test_class_list(pro_name):
     return test_class_list
 
 
-def pro_exist(pro_name):
+def get_app_package(pro_name):
     """
-    判断项目名称是否存在
+    通过项目名称 获取APP信息 （ appPackage ）
     :param pro_name:
     :return:
+
     """
-    pro_name_list = ["pro_demo_1", "pro_demo_2"]
-    if pro_name in pro_name_list:
-        return True
+    if pro_name == "pro_demo_1":  # 应用宝
+        app_package = "com.tencent.android.qqdownloader"
     else:
-        return False
+        app_package = None
+    return app_package
 
 
 def get_login_accout(current_thread_name_index):
@@ -40,20 +43,6 @@ def get_login_accout(current_thread_name_index):
         return "user_2", "passwd_2"
     else:
         return "user_3", "passwd_3"
-
-
-def get_app_package(pro_name):
-    """
-    通过项目名称 获取APP信息 （ appPackage ）
-    :param pro_name:
-    :return:
-
-    """
-    if pro_name == "pro_demo_1":  # 应用宝
-        app_package = "com.tencent.android.qqdownloader"
-    else:
-        app_package = None
-    return app_package
 
 
 def config_android_device_list():
@@ -76,3 +65,4 @@ def config_android_device_list():
     android_device_info_list.append(smartisan_pro)
 
     return android_device_info_list
+
