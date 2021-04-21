@@ -50,7 +50,7 @@ def run_case(pro_name):
     :param pro_name:
     :return:
     """
-    if not pro_exist(pro_name):
+    if pro_name not in pro_name_list:
         msg = PRO_NOT_EXIST
     else:
         # 获取已连接的设备列表
